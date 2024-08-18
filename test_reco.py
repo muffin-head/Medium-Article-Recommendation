@@ -3,7 +3,9 @@ import pytest
 
 @pytest.fixture
 def client():
-    return app.test_client()
+    with app.test_client() as client:
+        yield client
+
 
 def test_client(client):
     resp=client.get('/ping')
