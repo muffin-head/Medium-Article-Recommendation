@@ -72,4 +72,4 @@ jobs:
         with:
           task-definition: ${{ steps.task-def.outputs.task-definition }}
           service: reco-service
-          cluster: ${{env.reco-Cluster}}
+          cluster: ${{env.ECS_CLUSTER}}
