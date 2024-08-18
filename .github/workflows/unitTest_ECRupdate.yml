@@ -39,7 +39,8 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v3
         with:
           aws-region: ${{env.AWS_REGION}}
-          role-to-assume: arn:aws:iam::992519870191:user/flask_app
+          role-to-assume: arn:aws:iam::123456789012:role/my-deployment-role
+          role-session-name: GitHubActions
           aws-access-key-id: ${{secrets.AWS_ACCESS_KEY}}
           aws-secret-access-key: ${{secrets.AWS_SECRET_KEY}}
 
