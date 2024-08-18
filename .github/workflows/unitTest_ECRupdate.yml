@@ -8,6 +8,7 @@ env:
   ECR_REPO: reco-image
   ECS_CLUSTER: reco-Cluster
   CONTAINER_NAME: reco-image
+  ECS_TASK_DEFINITION: reco-TD-revision1.json
 
 jobs:
   job1:
@@ -47,6 +48,7 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Build, tag, and push docker image to Amazon ECR
+        id: build-image
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry}}
           REPOSITORY: ${{env.ECR_REPO}}
@@ -54,3 +56,18 @@ jobs:
         run: |
           docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+
+      - name: Render Amazon ECS task definition
+        id: task-def
+        uses: brunocascio/amazon-ecs-render-task-definition@v1.2.0
+        with:
+          task-definition: ${{env.ECS_TASK_DEFINITION}}
+          container-name: ${{env.CONTAINER_NAME}}
+          image: ${{steps.build-image.outputs.image}}
+
+      - name: Deploy to Amazon ECS service
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          service: reco-service
+          cluster: ${{env.reco-Cluster}}
